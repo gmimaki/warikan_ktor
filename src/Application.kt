@@ -1,5 +1,6 @@
 package com.example
 
+import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.*
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.*
@@ -9,6 +10,8 @@ import io.ktor.routing.post
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.features.ContentNegotiation
+import io.ktor.jackson.jackson
 
 data class Couple(
     val id: Long
@@ -16,6 +19,12 @@ data class Couple(
 
 fun main(args: Array<String>) {
     val server = embeddedServer(Netty, 8080) {
+        install(ContentNegotiation) {
+            // JSONを返せるように
+            jackson {
+                configure(SerializationFeature.INDENT_OUTPUT, true)
+            }
+        }
         routing {
             get("/") {
                 call.respond(HttpStatusCode.OK, "Hello Ktor")
