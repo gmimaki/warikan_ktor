@@ -19,7 +19,7 @@ data class Couple(
     val name2: String
 )
 
-fun main(args: Array<String>) {
+fun Application.module() {
     val server = embeddedServer(Netty, 8080) {
         install(ContentNegotiation) {
             // JSONを返せるように
