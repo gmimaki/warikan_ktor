@@ -14,7 +14,9 @@ import io.ktor.features.ContentNegotiation
 import io.ktor.jackson.jackson
 
 data class Couple(
-    val id: Long
+    val id: Long,
+    val name1: String,
+    val name2: String
 )
 
 fun main(args: Array<String>) {
@@ -29,9 +31,12 @@ fun main(args: Array<String>) {
             get("/") {
                 call.respond(HttpStatusCode.OK, "Hello Ktor")
             }
-            post("/couple") {
+            get("/couple") {
                 println("couple create")
-                call.respond(Couple(1))
+                call.respond(Couple(1, "名前1", "名前2"))
+            }
+            post("/couple") {
+
             }
         }
     }
