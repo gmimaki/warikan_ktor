@@ -1,5 +1,7 @@
 package com.example
 
+import com.example.dao.Couples
+import com.example.entity.Couple
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
 import io.ktor.application.call
@@ -14,12 +16,8 @@ import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import org.jetbrains.exposed.sql.Database
-
-data class Couple(
-    val id: Long,
-    val name1: String,
-    val name2: String
-)
+import org.jetbrains.exposed.sql.SchemaUtils
+import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Application.module() {
     Database.connect("jdbc:h2:mem:ktor_db;DB_CLOSE_DELAY=1", "org.h2.Driver")
@@ -30,13 +28,19 @@ fun Application.module() {
                 configure(SerializationFeature.INDENT_OUTPUT, true)
             }
         }
+        transaction {
+            SchemaUtils.create(Couples)
+            Couple.new {
+                name1 = "name1"
+                name2 = "name2"
+            }
+        }
         routing {
             get("/") {
                 call.respond(HttpStatusCode.OK, "Hello Ktor")
             }
             get("/couple") {
                 println("couple create")
-                call.respond(Couple(1, "名前1", "名前2"))
             }
             post("/couple") {
 
