@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun Application.module() {
-    Database.connect("jdbc:h2:mem:ktor_db;DB_CLOSE_DELAY=1", "org.h2.Driver")
+    Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "org.h2.Driver")
     val server = embeddedServer(Netty, 8080) {
         install(ContentNegotiation) {
             // JSONを返せるように
