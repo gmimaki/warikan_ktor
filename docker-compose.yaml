@@ -9,7 +9,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - $PWD/build/libs/:/app/
+      - $PWD/build/libs/my-application.jar:/app/my-application.jar
 
   postgresql:
     build:
