@@ -10,4 +10,7 @@ class Couple(id: EntityID<Int>) : IntEntity(id) {
 
     var name1 by Couples.name1
     var name2 by Couples.name2
+
+    var ratio1 by Couples.ratio1
+    var ratio2 by Couples.ratio2
 }

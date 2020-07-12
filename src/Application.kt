@@ -29,6 +29,8 @@ fun Application.module() {
             Couple.new {
                 name1 = "name1"
                 name2 = "name2"
+                ratio1 = 50
+                ratio2 = 50
             }
         }
         routing {
