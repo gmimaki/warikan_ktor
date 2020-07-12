@@ -31,6 +31,9 @@ repositories {
 }
 
 dependencies {
+    compile group: 'com.zaxxer', name: 'HikariCP', version: '3.2.0'
+    compile 'org.jetbrains.exposed:exposed:0.17.6'
+    runtime group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "io.ktor:ktor-server-netty:$ktor_version"
     implementation "io.ktor:ktor-jackson:$ktor_version"

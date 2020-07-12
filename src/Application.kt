@@ -4,6 +4,8 @@ import com.example.controller.coupleController
 import com.example.dao.Couples
 import com.example.entity.Couple
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
@@ -15,8 +17,21 @@ import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
+fun initDB() {
+    print("AAAAAAAAAAAAAAA")
+    val config = HikariConfig("/hikari.properties")
+    print("BBBBBBBBBBBBBBBBBBBBB")
+    print(config)
+    //config.schema = <dbSchema>
+    val ds = HikariDataSource(config)
+    print("this is DDDDDDDDDDDSSSSSSSSSSSSS")
+    print(ds)
+    Database.connect(ds)
+}
+
 fun Application.module() {
-    Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "org.h2.Driver")
+    //Database.connect("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "org.h2.Driver")
+    initDB()
     val server = embeddedServer(Netty, 8080) {
         install(ContentNegotiation) {
             // JSONを返せるように
@@ -39,3 +54,4 @@ fun Application.module() {
     }
     server.start()
 }
+
