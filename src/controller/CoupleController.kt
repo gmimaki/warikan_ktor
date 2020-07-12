@@ -19,7 +19,7 @@ fun Route.coupleController() {
         get {
             call.respond(
                 HttpStatusCode.OK,
-                coupleService.getAllCouples().map { couple -> GetCoupleResMsg(couple.name1, couple.name2) }
+                coupleService.getAllCouples().map { couple -> GetCoupleResMsg(couple.name1, couple.name2, couple.ratio1, couple.ratio2) }
             )
         }
         post {
