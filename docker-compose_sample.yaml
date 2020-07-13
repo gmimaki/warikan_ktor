@@ -12,6 +12,10 @@ services:
       - $PWD/build/libs/my-application.jar:/app/my-application.jar
     depends_on:
       - postgresql
+    environment:
+      - COGNITO_DOAMIN= # need
+      - COGNITO_CLIENT_ID= # need
+      - COGNITO_CLIENT_SECRET= # need
 
   postgresql:
     build:

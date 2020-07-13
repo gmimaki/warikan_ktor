@@ -8,6 +8,7 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
 import io.ktor.application.install
+import io.ktor.auth.Authentication
 import io.ktor.features.ContentNegotiation
 import io.ktor.jackson.jackson
 import io.ktor.routing.routing
@@ -18,14 +19,9 @@ import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
 
 fun initDB() {
-    print("AAAAAAAAAAAAAAA")
     val config = HikariConfig("/hikari.properties")
-    print("BBBBBBBBBBBBBBBBBBBBB")
-    print(config)
     //config.schema = <dbSchema>
     val ds = HikariDataSource(config)
-    print("this is DDDDDDDDDDDSSSSSSSSSSSSS")
-    print(ds)
     Database.connect(ds)
 }
 
@@ -39,6 +35,11 @@ fun Application.module() {
                 configure(SerializationFeature.INDENT_OUTPUT, true)
             }
         }
+
+        install(Authentication) {
+
+        }
+
         transaction {
             SchemaUtils.create(Couples)
             Couple.new {
