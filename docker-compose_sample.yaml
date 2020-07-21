@@ -13,9 +13,11 @@ services:
     depends_on:
       - postgresql
     environment:
-      - COGNITO_DOAMIN= # need
-      - COGNITO_CLIENT_ID= # need
-      - COGNITO_CLIENT_SECRET= # need
+      #- COGNITO_DOMAIN= # need
+      #- COGNITO_CLIENT_ID= # need
+      #- COGNITO_CLIENT_SECRET= # need
+      - GOOGLE_CLIENT_ID = 1022619172000-rbrqs8fhj094mq8eskht640dcs0euokb.apps.googleusercontent.com
+      - GOOGLE_CLIENT_SECRET = 4tH9Le7Xer7j4w_x67IdhLW9
 
   postgresql:
     build:
