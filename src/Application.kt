@@ -3,21 +3,32 @@ package com.example
 import com.example.controller.coupleController
 import com.example.dao.Couples
 import com.example.entity.Couple
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
+import io.ktor.application.ApplicationCall
+import io.ktor.application.call
 import io.ktor.application.install
-import io.ktor.auth.Authentication
-import io.ktor.auth.OAuthServerSettings
-import io.ktor.auth.oauth
+import io.ktor.auth.*
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.apache.Apache
+import io.ktor.client.request.get
+import io.ktor.client.request.header
 import io.ktor.features.ContentNegotiation
+import io.ktor.features.origin
 import io.ktor.http.HttpMethod
 import io.ktor.jackson.jackson
+import io.ktor.request.host
+import io.ktor.request.port
+import io.ktor.response.respondRedirect
+import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.sessions.sessions
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -29,9 +40,28 @@ fun initDB() {
     Database.connect(ds)
 }
 
-const val COGNITO = "cognito"
 private fun Application.getEnv(name: String): String {
     return environment.config.property(name).getString()
+}
+
+data class MySession(val userId: String = "AAAAA")
+
+val googleOauthProvider = OAuthServerSettings.OAuth2ServerSettings(
+    name = "google",
+    authorizeUrl = "https://accounts.google.com/o/oauth2/auth",
+    accessTokenUrl = "https://www.googleapis.com/oauth2/v3/token",
+    requestMethod = HttpMethod.Post,
+
+    clientId = System.getenv("GOOGLE_CLIENT_ID"),
+    clientSecret = System.getenv("GOOGLE_CLIENT_SECRET"),
+    defaultScopes = listOf("profile")
+)
+
+private fun ApplicationCall.redirectUrl(path: String): String {
+    val defaultPort = if (request.origin.scheme == "http") 80 else 443
+    val hostPort = request.host()!! + request.port().let { port -> if (port == defaultPort) "" else ":$port" }
+    val protocol = request.origin.scheme
+    return "$protocol://$hostPort$path"
 }
 
 fun Application.module() {
@@ -46,6 +76,7 @@ fun Application.module() {
         }
 
         install(Authentication) {
+            /*
             oauth(COGNITO) {
                 client = HttpClient()
                 providerLookup = {
@@ -61,6 +92,12 @@ fun Application.module() {
                 }
                 urlProvider = { "http://localhost:8080/login" }
             }
+             */
+            oauth("google-oauth") {
+                client = HttpClient(Apache)
+                providerLookup = { googleOauthProvider }
+                urlProvider = { redirectUrl("/login") }
+            }
         }
 
         transaction {
@@ -73,6 +110,26 @@ fun Application.module() {
             }
         }
         routing {
+            authenticate("google-oauth") {
+                route("/login") {
+                    handle {
+                        val principal = call.authentication.principal<OAuthAccessTokenResponse.OAuth2>()
+                            ?: error("No principal")
+
+                        val json = HttpClient(Apache).get<String>("https://www.googleapis.com/userinfo/v2/me") {
+                            header("Authorization", "Bearer ${principal.accessToken}")
+                        }
+
+                        val data = ObjectMapper().readValue<Map<String, Any?>>(json)
+                        val id = data["id"] as String?
+
+                        if (id != null) {
+                            call.sessions.set(MySession("id").userId, MySession("id"))
+                        }
+                        call.respondRedirect("/")
+                    }
+                }
+            }
             coupleController()
         }
     }
