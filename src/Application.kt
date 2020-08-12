@@ -1,8 +1,13 @@
 package com.example
 
+import com.auth0.jwt.JWT
+import com.auth0.jwt.JWTVerifier
+import com.auth0.jwt.algorithms.Algorithm
+import com.auth0.jwt.exceptions.JWTCreationException
 import com.example.controller.coupleController
 import com.example.dao.Couples
 import com.example.entity.Couple
+import com.example.entity.User
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -136,3 +141,16 @@ fun Application.module() {
     server.start()
 }
 
+val privateKey = "IHAVETOHIDETHIS"
+fun authenticateToken(token: String) {
+    try {
+        val algorithm: com.auth0.jwt.algorithms.Algorithm = Algorithm.HMAC256(privateKey)
+        val verifier: JWTVerifier = JWT.require(algorithm).withIssuer("warikan_ktor").build()
+        verifier.verify(token)
+    } catch (e: JWTCreationException) {
+        println("Invalid token")
+    }
+}
+fun createToken(user: User): String {
+    var token: String
+}
