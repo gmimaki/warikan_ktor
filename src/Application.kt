@@ -37,6 +37,7 @@ import io.ktor.sessions.sessions
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.util.*
 
 fun initDB() {
     val config = HikariConfig("/hikari.properties")
@@ -141,6 +142,7 @@ fun Application.module() {
     server.start()
 }
 
+// https://qiita.com/syumiwohossu/items/afae28300f3b70577e1b
 val privateKey = "IHAVETOHIDETHIS"
 fun authenticateToken(token: String) {
     try {
@@ -152,5 +154,23 @@ fun authenticateToken(token: String) {
     }
 }
 fun createToken(user: User): String {
-    var token: String
+    lateinit var token: String
+
+    try {
+        val algorithm: com.auth0.jwt.algorithms.Algorithm = Algorithm.HMAC256(privateKey)
+        val calendar = Calendar.getInstance()
+        calendar.add(Calendar.SECOND, 30)
+        var expireTime = calendar.time
+        token = JWT.create().withIssuer("warikan_ktor").withClaim("name", user.name).withExpiresAt(expireTime).sign(algorithm)
+    } catch (e: JWTCreationException) {
+        println("Invalid signing")
+        // TODO 例外処理
+    }
+
+    return token
+}
+
+fun getUserNameFromToken(token: String): String {
+    val decodedToken = JWT.decode(token)
+    return decodedToken.getClaim("name").asString()
 }
