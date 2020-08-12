@@ -31,8 +31,8 @@ repositories {
 }
 
 dependencies {
-    compile group: 'com.zaxxer', name: 'HikariCP', version: '3.2.0'
-    compile 'org.jetbrains.exposed:exposed:0.17.6'
+    implementation group: 'com.zaxxer', name: 'HikariCP', version: '3.2.0'
+    implementation 'org.jetbrains.exposed:exposed:0.17.6'
     runtime group: 'org.postgresql', name: 'postgresql', version: '42.1.4'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     implementation "io.ktor:ktor-server-netty:$ktor_version"
@@ -40,8 +40,8 @@ dependencies {
     implementation "ch.qos.logback:logback-classic:$logback_version"
     implementation "org.jetbrains.exposed:exposed:$exposed_version"
     implementation "io.ktor:ktor-auth-jwt:$ktor_version"
-    compile "io.ktor:ktor-auth:$ktor_version"
-    compile "io.ktor:ktor-client-apache:$ktor_version"
+    implementation "io.ktor:ktor-auth:$ktor_version"
+    implementation "io.ktor:ktor-client-apache:$ktor_version"
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
 }
 
