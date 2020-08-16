@@ -28,6 +28,7 @@ class UserService {
         }
     }
 
+    // TODO なんかこれ機能してない
     fun existsByEmail(email: String): Boolean {
         var count = 0;
         transaction {
