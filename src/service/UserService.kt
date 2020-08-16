@@ -15,10 +15,11 @@ class UserService {
     }
 
     fun createUser(name: String, email: String, password: String) {
-        if (existsByEmail(email)) {
+        if (!existsByEmail(email)) {
             // TODO エラーハンドリング
         }
         transaction {
+            // TODO パスワード暗号化
             User.new {
                 this.name = name
                 this.email = email
@@ -28,7 +29,11 @@ class UserService {
     }
 
     fun existsByEmail(email: String): Boolean {
-        val select = Users.select { Users.email eq email }
-        return select.count() > 0
+        var count = 0;
+        transaction {
+            val select = Users.select { Users.email eq email }
+            count = select.count();
+        }
+        return count > 0
     }
 }

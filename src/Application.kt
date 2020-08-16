@@ -6,8 +6,11 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTCreationException
 import com.example.controller.coupleController
 import com.example.dao.Couples
+import com.example.dao.Users
 import com.example.entity.Couple
 import com.example.entity.User
+import com.example.msg.CreateUserReq
+import com.example.service.UserService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.readValue
@@ -25,10 +28,14 @@ import io.ktor.client.request.header
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.origin
 import io.ktor.http.HttpMethod
+import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.request.host
 import io.ktor.request.port
+import io.ktor.request.receive
+import io.ktor.response.respond
 import io.ktor.response.respondRedirect
+import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
@@ -108,12 +115,7 @@ fun Application.module() {
 
         transaction {
             SchemaUtils.create(Couples)
-            Couple.new {
-                name1 = "name1"
-                name2 = "name2"
-                ratio1 = 50
-                ratio2 = 50
-            }
+            SchemaUtils.create(Users)
         }
         routing {
             authenticate("google-oauth") {
@@ -137,6 +139,25 @@ fun Application.module() {
                 }
             }
             coupleController()
+            route("/user/register") {
+                val userService = UserService()
+                post {
+                    print("ユーザー登録")
+                    val param = call.receive<CreateUserReq>()
+                    userService.createUser(param.name, param.email, param.password)
+                    call.respond(
+                        HttpStatusCode.OK
+                    )
+                    /*
+                    val result = call.receive<CreateCoupleReq>()
+                    coupl1eService.createCouple(result.name1, result.name2, result.ratio1, result.ratio2)
+                    call.respond(
+                        HttpStatusCode.OK,
+                        coupleService.getAllCouples().map { couple -> GetCoupleResMsg(couple.name1, couple.name2, couple.ratio1, couple.ratio2) }
+                    )
+                     */
+                }
+            }
         }
     }
     server.start()
