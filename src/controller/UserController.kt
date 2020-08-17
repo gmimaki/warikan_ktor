@@ -1,6 +1,7 @@
 package com.example.controller
 
 import com.example.msg.CreateUserReq
+import com.example.msg.CreateUserResMsg
 import com.example.msg.GetUserResMsg
 import com.example.service.UserService
 import io.ktor.application.call
@@ -43,10 +44,18 @@ fun Route.userController() {
     route("/user/register") {
         post {
             val param = call.receive<CreateUserReq>()
-            userService.createUser(param.name, param.email, param.password)
+            val token = userService.createUser(param.name, param.email, param.password)
+            // TODO ちゃんと返ってるか確認
             call.respond(
-                HttpStatusCode.OK
+                HttpStatusCode.OK,
+                CreateUserResMsg(token)
             )
+        }
+    }
+
+    route("/user/login") {
+        post {
+
         }
     }
 }

@@ -8,7 +8,6 @@ import com.example.controller.coupleController
 import com.example.controller.userController
 import com.example.dao.Couples
 import com.example.dao.Users
-import com.example.entity.User
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -27,7 +26,6 @@ import io.ktor.server.netty.Netty
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
-import java.util.*
 
 fun initDB() {
     val config = HikariConfig("/hikari.properties")
@@ -82,22 +80,6 @@ fun authenticateToken(token: String) {
     } catch (e: JWTCreationException) {
         println("Invalid token")
     }
-}
-fun createToken(user: User): String {
-    lateinit var token: String
-
-    try {
-        val algorithm: com.auth0.jwt.algorithms.Algorithm = Algorithm.HMAC256(privateKey)
-        val calendar = Calendar.getInstance()
-        calendar.add(Calendar.SECOND, 30)
-        var expireTime = calendar.time
-        token = JWT.create().withIssuer("warikan_ktor").withClaim("name", user.name).withExpiresAt(expireTime).sign(algorithm)
-    } catch (e: JWTCreationException) {
-        println("Invalid signing")
-        // TODO 例外処理
-    }
-
-    return token
 }
 
 fun getUserNameFromToken(token: String): String {

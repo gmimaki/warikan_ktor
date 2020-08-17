@@ -14,21 +14,27 @@ class UserService {
         return result
     }
 
-    fun createUser(name: String, email: String, password: String) {
-        if (!existsByEmail(email)) {
-            // TODO エラーハンドリング
+    fun createUser(name: String, email: String, password: String): String {
+        if (existsByEmail(email)) {
+            throw Error("Email exists");
         }
+        var token = ""
         transaction {
             // TODO パスワード暗号化
-            User.new {
+            val user = User.new {
                 this.name = name
                 this.email = email
                 this.password = password
             }
+
+            token = UserAuthService().createToken(user)
         }
+
+        print("TOKKKKKKKEEEEENNNN\n")
+        print(token)
+        return token;
     }
 
-    // TODO なんかこれ機能してない
     fun existsByEmail(email: String): Boolean {
         var count = 0;
         transaction {
