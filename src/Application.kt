@@ -5,29 +5,22 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTCreationException
 import com.example.controller.coupleController
+import com.example.controller.userController
 import com.example.dao.Couples
 import com.example.dao.Users
 import com.example.entity.User
-import com.example.msg.CreateUserReq
-import com.example.service.UserService
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
-import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.auth.Authentication
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.origin
-import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.request.host
 import io.ktor.request.port
-import io.ktor.request.receive
-import io.ktor.response.respond
-import io.ktor.routing.post
-import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -73,16 +66,7 @@ fun Application.module() {
         }
         routing {
             coupleController()
-            route("/user/register") {
-                val userService = UserService()
-                post {
-                    val param = call.receive<CreateUserReq>()
-                    userService.createUser(param.name, param.email, param.password)
-                    call.respond(
-                        HttpStatusCode.OK
-                    )
-                }
-            }
+            userController()
         }
     }
     server.start()
