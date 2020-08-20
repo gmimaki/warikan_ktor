@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTCreationException
 import com.example.controller.coupleController
 import com.example.controller.userController
+import com.example.controller.userRegisterController
 import com.example.dao.Couples
 import com.example.dao.Users
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -18,6 +19,7 @@ import io.ktor.jackson.jackson
 import io.ktor.request.header
 import io.ktor.request.host
 import io.ktor.request.port
+import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
@@ -53,23 +55,27 @@ fun Application.module() {
             }
         }
 
-        // TODO 特定のパスだけにしたい
-        intercept(ApplicationCallPipeline.Call) {
-            val ha = call.request.header("Authorization")
-            if (!ha.isNullOrBlank()) {
-                val splited = ha.split(" ")
-                val token = splited[1]
-                authenticateToken(token)
-            }
-        }
-
         transaction {
             SchemaUtils.create(Couples)
             SchemaUtils.create(Users)
         }
         routing {
-            coupleController()
-            userController()
+            userRegisterController()
+
+            // ログインが必要
+            route("/login") {
+                intercept(ApplicationCallPipeline.Call) {
+                    val ha = call.request.header("Authorization")
+                    if (!ha.isNullOrBlank()) {
+                        val splited = ha.split(" ")
+                        val token = splited[1]
+                        authenticateToken(token)
+                    }
+                }
+
+                coupleController()
+                userController()
+            }
         }
     }
     server.start()
