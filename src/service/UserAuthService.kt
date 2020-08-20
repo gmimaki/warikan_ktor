@@ -17,6 +17,7 @@ class UserAuthService {
             val calendar = Calendar.getInstance()
             calendar.add(Calendar.SECOND, 30)
             var expireTime = calendar.time
+            //token = JWT.create().withIssuer("warikan_ktor").withClaim("info", mapOf("id" to user.id, "name" to user.name)).withExpiresAt(expireTime).sign(algorithm)
             token = JWT.create().withIssuer("warikan_ktor").withClaim("name", user.name).withExpiresAt(expireTime).sign(algorithm)
         } catch (e: JWTCreationException) {
             throw Error("Invalid signing")

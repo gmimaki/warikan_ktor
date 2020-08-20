@@ -11,13 +11,11 @@ import com.example.dao.Users
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import io.ktor.application.Application
-import io.ktor.application.ApplicationCall
-import io.ktor.application.install
-import io.ktor.auth.Authentication
+import io.ktor.application.*
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.origin
 import io.ktor.jackson.jackson
+import io.ktor.request.header
 import io.ktor.request.host
 import io.ktor.request.port
 import io.ktor.routing.routing
@@ -55,7 +53,14 @@ fun Application.module() {
             }
         }
 
-        install(Authentication) {
+        // TODO 特定のパスだけにしたい
+        intercept(ApplicationCallPipeline.Call) {
+            val ha = call.request.header("Authorization")
+            if (!ha.isNullOrBlank()) {
+                val splited = ha.split(" ")
+                val token = splited[1]
+                authenticateToken(token)
+            }
         }
 
         transaction {
