@@ -15,7 +15,6 @@ fun Route.userController() {
 
     route("/user") {
         get {
-            print("GETTTTTTTTTTTTTTTTTTTTTTT")
             call.respond(
                 HttpStatusCode.OK,
                 userService.getAllUsers().map { user -> GetUserResMsg(user.name, user.email, user.password) }
