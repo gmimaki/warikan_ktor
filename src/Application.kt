@@ -16,10 +16,12 @@ import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.*
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.origin
+import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.request.header
 import io.ktor.request.host
 import io.ktor.request.port
+import io.ktor.response.respond
 import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
@@ -68,7 +70,9 @@ fun Application.module() {
             route("/general") {
                 intercept(ApplicationCallPipeline.Call) {
                     val ha = call.request.header("Authorization")
-                    if (!ha.isNullOrBlank()) {
+                    if (ha.isNullOrBlank()) {
+                        call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
+                    } else {
                         val splited = ha.split(" ")
                         val token = splited[1]
                         authenticateToken(token)
