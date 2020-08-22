@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTCreationException
 import com.example.controller.coupleController
+import com.example.controller.loginController
 import com.example.controller.userController
 import com.example.controller.userRegisterController
 import com.example.dao.Couples
@@ -61,9 +62,10 @@ fun Application.module() {
         }
         routing {
             userRegisterController()
+            loginController()
 
             // ログインが必要
-            route("/login") {
+            route("/general") {
                 intercept(ApplicationCallPipeline.Call) {
                     val ha = call.request.header("Authorization")
                     if (!ha.isNullOrBlank()) {

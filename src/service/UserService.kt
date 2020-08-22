@@ -2,6 +2,7 @@ package com.example.service
 
 import com.example.dao.Users
 import com.example.entity.User
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 
@@ -35,5 +36,11 @@ class UserService {
             count = select.count();
         }
         return count > 0
+    }
+
+    fun findByEmailAndPassword(email: String, password: String): User? {
+        return  transaction {
+            User.find { Users.email.eq(email) and Users.password.eq(password)}.singleOrNull()
+        }
     }
 }

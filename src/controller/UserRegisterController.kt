@@ -33,10 +33,4 @@ fun Route.userRegisterController() {
             )
         }
     }
-
-    route("/user/login") {
-        post {
-
-        }
-    }
 }
