@@ -4,10 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTCreationException
-import com.example.controller.coupleController
-import com.example.controller.loginController
-import com.example.controller.userController
-import com.example.controller.userRegisterController
+import com.example.controller.*
 import com.example.dao.Couples
 import com.example.dao.Users
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -79,6 +76,7 @@ fun Application.module() {
                     }
                 }
 
+                invitePartnerController()
                 coupleController()
                 userController()
             }
