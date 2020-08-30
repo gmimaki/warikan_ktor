@@ -97,7 +97,7 @@ fun authenticateToken(token: String) {
     }
 }
 
-fun getUserNameFromToken(token: String): String {
+fun getUserNameFromToken(token: String): Int {
     val decodedToken = JWT.decode(token)
-    return decodedToken.getClaim("name").asString()
+    return decodedToken.getClaim("userId").asInt()
 }
