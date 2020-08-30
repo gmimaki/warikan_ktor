@@ -1,16 +1,20 @@
 package com.example.controller
 
+import com.example.util.StringUtil
 import io.ktor.routing.Route
 import io.ktor.routing.post
 import io.ktor.routing.route
 
 fun Route.invitePartnerController() {
-    // TODO inviteTokenとpasswordの発行
+    val stringutil = StringUtil()
+    // TODO url(inviteToken)とpasswordの発行
     route("/invite_partner") {
         post {
-
+            val token = stringutil.createRandomString(30)
         }
     }
+
+    // TODO inviteTokenからユーザー情報取得
     /*
     val userService = UserService()
 
