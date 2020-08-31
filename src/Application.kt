@@ -66,6 +66,7 @@ fun Application.module() {
             // ログインが必要
             route("/general") {
                 var token = ""
+                var userId = ""
                 intercept(ApplicationCallPipeline.Call) {
                     val ha = call.request.header("Authorization")
                     if (ha.isNullOrBlank()) {
@@ -73,17 +74,13 @@ fun Application.module() {
                     } else {
                         val splited = ha.split(" ")
                         token = splited[1]
-                        print("AAAAAAAAAAAAA")
-                        print(token)
                         authenticateToken(token)
+
+                        if (token?.length > 0) {
+                            userId = getUserIdFromToken(token)
+                        }
                     }
                 }
-
-                /*
-                val userId = getUserIdFromToken(token)
-                print("BBBBBBBBBBBBBB")
-                print(userId)
-                 */
 
                 invitePartnerController()
                 coupleController()
@@ -106,7 +103,7 @@ fun authenticateToken(token: String) {
     }
 }
 
-fun getUserIdFromToken(token: String): Int {
+fun getUserIdFromToken(token: String?): String {
     val decodedToken = JWT.decode(token)
-    return decodedToken.getClaim("userId").asInt()
+    return decodedToken.getClaim("userId").asString()
 }
