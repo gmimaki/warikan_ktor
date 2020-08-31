@@ -65,16 +65,25 @@ fun Application.module() {
 
             // ログインが必要
             route("/general") {
+                var token = ""
                 intercept(ApplicationCallPipeline.Call) {
                     val ha = call.request.header("Authorization")
                     if (ha.isNullOrBlank()) {
                         call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
                     } else {
                         val splited = ha.split(" ")
-                        val token = splited[1]
+                        token = splited[1]
+                        print("AAAAAAAAAAAAA")
+                        print(token)
                         authenticateToken(token)
                     }
                 }
+
+                /*
+                val userId = getUserIdFromToken(token)
+                print("BBBBBBBBBBBBBB")
+                print(userId)
+                 */
 
                 invitePartnerController()
                 coupleController()
@@ -97,7 +106,7 @@ fun authenticateToken(token: String) {
     }
 }
 
-fun getUserNameFromToken(token: String): Int {
+fun getUserIdFromToken(token: String): Int {
     val decodedToken = JWT.decode(token)
     return decodedToken.getClaim("userId").asInt()
 }

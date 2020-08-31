@@ -15,7 +15,7 @@ class UserAuthService {
         try {
             val algorithm: com.auth0.jwt.algorithms.Algorithm = Algorithm.HMAC256(privateKey)
             val calendar = Calendar.getInstance()
-            calendar.add(Calendar.SECOND, 30)
+            calendar.add(Calendar.MINUTE, 30)
             var expireTime = calendar.time
             token = JWT.create().withIssuer("warikan_ktor").withClaim("userId", user.id.toString()).withExpiresAt(expireTime).sign(algorithm)
         } catch (e: JWTCreationException) {
