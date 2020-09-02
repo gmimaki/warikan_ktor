@@ -11,4 +11,10 @@ class InviteToken(id: EntityID<Int>) : IntEntity(id) {
     var userId by InviteTokens.userId
     var token by InviteTokens.token
     var password by InviteTokens.password
+
+    var createdAt by InviteTokens.createdAt
+    var expiredAt by InviteTokens.expiredAt
+
+    var approvedAt by InviteTokens.approvedAt
+    var approvedUserId by InviteTokens.approvedUserId
 }

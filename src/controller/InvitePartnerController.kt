@@ -1,6 +1,7 @@
 package com.example.controller
 
 import com.example.msg.InvitePartnerRes
+import com.example.service.InvitePartnerService
 import com.example.util.StringUtil
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
@@ -9,19 +10,17 @@ import io.ktor.routing.Route
 import io.ktor.routing.post
 import io.ktor.routing.route
 
-fun Route.invitePartnerController() {
+fun Route.invitePartnerController(userId: Int) {
     val stringutil = StringUtil()
+    val invitePartnerService = InvitePartnerService()
     route("/invite_partner") {
         post {
-            val token = stringutil.createRandomString(30)
-            val password = stringutil.createRandomString(12)
-            val expireHours = 24
-            val expiredAt = System.currentTimeMillis() + (expireHours * 60 * 60) // 24H
-            // TODO DBチェック 発行されてればそれを使う なければ発行してDBに記録
+            val now = System.currentTimeMillis()
+            val inviteToken = invitePartnerService.getAvailableInviteToken(userId, now)
 
             call.respond(
                 HttpStatusCode.OK,
-                InvitePartnerRes(token, password, expireHours)
+                InvitePartnerRes(inviteToken.token, inviteToken.password, invitePartnerService.getExpireHours())
             )
         }
     }

@@ -6,6 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTCreationException
 import com.example.controller.*
 import com.example.dao.Couples
+import com.example.dao.InviteTokens
 import com.example.dao.Users
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.zaxxer.hikari.HikariConfig
@@ -58,6 +59,7 @@ fun Application.module() {
         transaction {
             SchemaUtils.create(Couples)
             SchemaUtils.create(Users)
+            SchemaUtils.create(InviteTokens)
         }
         routing {
             userRegisterController()
@@ -66,7 +68,7 @@ fun Application.module() {
             // ログインが必要
             route("/general") {
                 var token = ""
-                var userId = ""
+                var userId = 0
                 intercept(ApplicationCallPipeline.Call) {
                     val ha = call.request.header("Authorization")
                     if (ha.isNullOrBlank()) {
@@ -78,11 +80,12 @@ fun Application.module() {
 
                         if (token?.length > 0) {
                             userId = getUserIdFromToken(token)
+                            print("ここuserIdがあるよ" + userId)
                         }
                     }
                 }
 
-                invitePartnerController()
+                invitePartnerController(userId)
                 coupleController()
                 userController()
             }
@@ -103,7 +106,8 @@ fun authenticateToken(token: String) {
     }
 }
 
-fun getUserIdFromToken(token: String?): String {
+fun getUserIdFromToken(token: String?): Int {
     val decodedToken = JWT.decode(token)
-    return decodedToken.getClaim("userId").asString()
+    val decoded = decodedToken.getClaim("userId").asString()
+    return Integer.parseInt(decoded)
 }
