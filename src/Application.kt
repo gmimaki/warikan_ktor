@@ -6,7 +6,7 @@ import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTCreationException
 import com.example.controller.*
 import com.example.dao.Couples
-import com.example.dao.InviteTokens
+import com.example.dao.Invite_tokens
 import com.example.dao.Users
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.zaxxer.hikari.HikariConfig
@@ -60,7 +60,7 @@ fun Application.module() {
         transaction {
             SchemaUtils.create(Couples)
             SchemaUtils.create(Users)
-            SchemaUtils.create(InviteTokens)
+            SchemaUtils.create(Invite_tokens)
         }
         routing {
             userRegisterController()

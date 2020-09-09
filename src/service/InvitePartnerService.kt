@@ -1,6 +1,6 @@
 package com.example.service
 
-import com.example.dao.InviteTokens
+import com.example.dao.Invite_tokens
 import com.example.entity.InviteToken
 import com.example.util.StringUtil
 import org.jetbrains.exposed.sql.and
@@ -27,7 +27,6 @@ class InvitePartnerService {
         val password = stringutil.createRandomString(12)
         val expiredAt = createdAt + (getExpireHours() * 60 * 60) // 24H
 
-        // TODO userIdが0になっちゃう jwtから取れてない
         return transaction {
             InviteToken.new {
                 this.userId = userId
@@ -42,10 +41,10 @@ class InvitePartnerService {
     private fun findUnapproved(userId: Int, checkedAt: Long): InviteToken? {
         return  transaction {
             InviteToken.find {
-                InviteTokens.userId.eq(userId) and
-                InviteTokens.createdAt.lessEq(checkedAt) and
-                InviteTokens.createdAt.greaterEq(checkedAt - (getExpireHours() * 60 * 60)) and
-                InviteTokens.approvedUserId.greater(0)
+                Invite_tokens.userId.eq(userId) and
+                Invite_tokens.createdAt.lessEq(checkedAt) and
+                Invite_tokens.createdAt.greaterEq(checkedAt - (getExpireHours() * 60 * 60)) and
+                Invite_tokens.approvedUserId.isNull()
             }.singleOrNull()
         }
     }
