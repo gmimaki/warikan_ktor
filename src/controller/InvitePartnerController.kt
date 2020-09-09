@@ -1,8 +1,8 @@
 package com.example.controller
 
+import com.example.MyAttributeKey
 import com.example.msg.InvitePartnerRes
 import com.example.service.InvitePartnerService
-import com.example.util.StringUtil
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
@@ -10,12 +10,12 @@ import io.ktor.routing.Route
 import io.ktor.routing.post
 import io.ktor.routing.route
 
-fun Route.invitePartnerController(userId: Int) {
-    val stringutil = StringUtil()
+fun Route.invitePartnerController() {
     val invitePartnerService = InvitePartnerService()
     route("/invite_partner") {
         post {
             val now = System.currentTimeMillis()
+            val userId = call.attributes[MyAttributeKey]
             val inviteToken = invitePartnerService.getAvailableInviteToken(userId, now)
 
             call.respond(

@@ -30,7 +30,6 @@ import org.jetbrains.exposed.sql.transactions.transaction
 
 fun initDB() {
     val config = HikariConfig("/hikari.properties")
-    //config.schema = <dbSchema>
     val ds = HikariDataSource(config)
     Database.connect(ds)
 }
@@ -45,6 +44,8 @@ private fun ApplicationCall.redirectUrl(path: String): String {
     val protocol = request.origin.scheme
     return "$protocol://$hostPort$path"
 }
+
+val MyAttributeKey = io.ktor.util.AttributeKey<Int>("MyAttributeKey")
 
 fun Application.module() {
     initDB()
@@ -80,12 +81,12 @@ fun Application.module() {
 
                         if (token?.length > 0) {
                             userId = getUserIdFromToken(token)
-                            print("ここuserIdがあるよ" + userId)
+                            call.attributes.put(MyAttributeKey, userId)
                         }
                     }
                 }
 
-                invitePartnerController(userId)
+                invitePartnerController()
                 coupleController()
                 userController()
             }
