@@ -24,24 +24,4 @@ fun Route.invitePartnerController() {
             )
         }
     }
-
-    // TODO inviteTokenからユーザー情報取得
-    /*
-    val userService = UserService()
-
-    route("/user/login") {
-        post {
-            val param = call.receive<LoginReq>()
-            val user = userService.findByEmailAndPassword(param.email, param.password) ?: throw Error("メールアドレスかパスワードが正しくありません")
-            val token = async {
-                UserAuthService().createToken(user)
-            }.await()
-
-            call.respond(
-                HttpStatusCode.OK,
-                LoginRes(token)
-            )
-        }
-    }
-     */
 }
