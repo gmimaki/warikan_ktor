@@ -1,6 +1,12 @@
 package com.example.service
 
+import com.example.dao.Invite_tokens
+import com.example.dao.Users
 import com.example.entity.User
+import org.jetbrains.exposed.sql.SortOrder
+import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.transactions.transaction
 
 class AcceptPartnerService {
     fun getExpireHours(): Int {
@@ -10,14 +16,13 @@ class AcceptPartnerService {
     fun getInviterByInviteToken(token: String, password: String, checkedAt: Long): User? {
         // expireしてないか?
         // passwordはcorrectか?
-        /*
-        SELECT
-            U.name
-        FROM
-            invite_tokens AS IT
-        INNER JOIN users AS U ON IT.user_id = U.id
-        WHERE IT.token = token
-         */
+        val tokens = transaction {
+            (Invite_tokens innerJoin Users).slice(Users.name).
+                    select { (Invite_tokens.token.eq(token)) and Invite_tokens.userId.eq(Users.id) }.
+                    orderBy(Invite_tokens.expiredAt, SortOrder.DESC)
+        }
+        println("THIS IS InviteTokens")
+        println(tokens)
 
         return null
     }
