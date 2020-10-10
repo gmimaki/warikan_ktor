@@ -65,6 +65,7 @@ fun Application.module() {
         routing {
             userRegisterController()
             loginController()
+            acceptPartnerController()
 
             // ログインが必要
             route("/general") {
