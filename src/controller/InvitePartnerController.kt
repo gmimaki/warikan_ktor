@@ -14,7 +14,7 @@ fun Route.invitePartnerController() {
     val invitePartnerService = InvitePartnerService()
     route("/invite_partner") {
         post {
-            val now = System.currentTimeMillis()
+            val now = System.currentTimeMillis() / 1000
             val userId = call.attributes[MyAttributeKey]
             val inviteToken = invitePartnerService.getAvailableInviteToken(userId, now)
 

@@ -18,7 +18,7 @@ class AcceptPartnerService {
         }
 
         return transaction {
-            User.findById(token.id)
+            User.findById(token.userId)
         }
     }
 }
