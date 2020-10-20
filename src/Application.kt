@@ -12,8 +12,11 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import io.ktor.application.*
+import io.ktor.features.CORS
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.origin
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.jackson.jackson
 import io.ktor.request.header
@@ -55,6 +58,16 @@ fun Application.module() {
             jackson {
                 configure(SerializationFeature.INDENT_OUTPUT, true)
             }
+        }
+        install(CORS) {
+            method(HttpMethod.Options)
+            method(HttpMethod.Get)
+            method(HttpMethod.Post)
+            header(HttpHeaders.ContentType)
+            header(HttpHeaders.AccessControlAllowOrigin)
+            header(HttpHeaders.AccessControlAllowHeaders)
+            anyHost()
+            allowCredentials = true
         }
 
         transaction {

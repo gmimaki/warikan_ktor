@@ -31,4 +31,9 @@ fun Route.acceptPartnerController() {
             )
         }
     }
+    route("/accept") {
+        post {
+
+        }
+    }
 }
