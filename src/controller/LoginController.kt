@@ -1,5 +1,6 @@
 package com.example.controller
 
+import com.example.MySession
 import com.example.msg.LoginReq
 import com.example.msg.LoginRes
 import com.example.service.UserAuthService
@@ -11,7 +12,10 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.post
 import io.ktor.routing.route
+import io.ktor.sessions.sessions
+import io.ktor.sessions.set
 import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 
 fun Route.loginController() {
     val userService = UserService()
@@ -24,6 +28,10 @@ fun Route.loginController() {
                 UserAuthService().createToken(user)
             }.await()
 
+            runBlocking {
+                call.sessions.set(MySession(token = token))
+            }
+
             call.respond(
                 HttpStatusCode.OK,
                 LoginRes(token)
@@ -31,3 +39,4 @@ fun Route.loginController() {
         }
     }
 }
+

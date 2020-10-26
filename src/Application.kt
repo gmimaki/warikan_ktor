@@ -27,6 +27,8 @@ import io.ktor.routing.route
 import io.ktor.routing.routing
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.sessions.Sessions
+import io.ktor.sessions.cookie
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -48,6 +50,8 @@ private fun ApplicationCall.redirectUrl(path: String): String {
     return "$protocol://$hostPort$path"
 }
 
+data class MySession(val token: String)
+
 val MyAttributeKey = io.ktor.util.AttributeKey<Int>("MyAttributeKey")
 
 fun Application.module() {
@@ -68,6 +72,9 @@ fun Application.module() {
             header(HttpHeaders.AccessControlAllowHeaders)
             anyHost()
             allowCredentials = true
+        }
+        install(Sessions) {
+            cookie<MySession>("TOKEN")
         }
 
         transaction {
