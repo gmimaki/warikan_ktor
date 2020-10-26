@@ -14,8 +14,9 @@ import io.ktor.routing.post
 import io.ktor.routing.route
 import io.ktor.sessions.sessions
 import io.ktor.sessions.set
-import kotlinx.coroutines.async
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 fun Route.loginController() {
     val userService = UserService()
@@ -23,10 +24,10 @@ fun Route.loginController() {
     route("/user/login") {
         post {
             val param = call.receive<LoginReq>()
-            val user = userService.findByEmailAndPassword(param.email, param.password) ?: throw Error("メールアドレスかパスワードが正しくありません")
-            val token = async {
+            val user = userService.findByEmailAndPassword(param.email, param.password) ?: throw Error("メールアドレスかパスワードが正しくありません") // 400か401にしたい
+            val token = withContext(Dispatchers.Default) {
                 UserAuthService().createToken(user)
-            }.await()
+            }
 
             runBlocking {
                 call.sessions.set(MySession(token = token))
@@ -34,7 +35,7 @@ fun Route.loginController() {
 
             call.respond(
                 HttpStatusCode.OK,
-                LoginRes(token)
+                LoginRes(user.name) // TODO userIdも
             )
         }
     }
