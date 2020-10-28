@@ -35,7 +35,7 @@ fun Route.loginController() {
 
             call.respond(
                 HttpStatusCode.OK,
-                LoginRes(user.name) // TODO userIdも
+                LoginRes(Integer.parseInt(user.id.toString()), user.name) // user.id as IntがCastエラーになるので一度文字列にしてからintにする必要がある
             )
         }
     }
