@@ -30,7 +30,7 @@ fun Route.loginController() {
             }
 
             runBlocking {
-                call.sessions.set(MySession(token = token))
+                call.sessions.set(MySession(token))
             }
 
             call.respond(

@@ -32,6 +32,7 @@ import io.ktor.sessions.cookie
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.SchemaUtils
 import org.jetbrains.exposed.sql.transactions.transaction
+import java.net.URLDecoder
 
 fun initDB() {
     val config = HikariConfig("/hikari.properties")
@@ -92,18 +93,24 @@ fun Application.module() {
                 var token = ""
                 var userId = 0
                 intercept(ApplicationCallPipeline.Call) {
-                    val ha = call.request.header("Authorization")
-                    if (ha.isNullOrBlank()) {
+                    val headerCookie = call.request.header("Cookie")
+                    if (headerCookie.isNullOrBlank()) {
                         call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
                     } else {
-                        val splited = ha.split(" ")
-                        token = splited[1]
-                        authenticateToken(token)
-
-                        if (token?.length > 0) {
-                            userId = getUserIdFromToken(token)
-                            call.attributes.put(MyAttributeKey, userId)
+                        val cookies = headerCookie.split("; ")
+                        for (i in cookies) {
+                            val keyAndVal = i.split("=")
+                            if (keyAndVal[0] == "TOKEN") {
+                                token = URLDecoder.decode(keyAndVal[1], "UTF-8")
+                                token = token.replace("token=%23s", "") // なんか謎に入るんだよなー
+                                authenticateToken(token)
+                            }
                         }
+                    }
+
+                    if (token?.length > 0) {
+                        userId = getUserIdFromToken(token)
+                        call.attributes.put(MyAttributeKey, userId)
                     }
                 }
 
