@@ -3,7 +3,7 @@ package com.example
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import com.auth0.jwt.exceptions.JWTCreationException
+import com.auth0.jwt.exceptions.TokenExpiredException
 import com.example.controller.*
 import com.example.dao.Couples
 import com.example.dao.Invite_tokens
@@ -103,7 +103,11 @@ fun Application.module() {
                             if (keyAndVal[0] == "TOKEN") {
                                 token = URLDecoder.decode(keyAndVal[1], "UTF-8")
                                 token = token.replace("token=%23s", "") // なんか謎に入るんだよなー
-                                authenticateToken(token)
+                                val err = authenticateToken(token)
+                                if (err != null) {
+                                    call.respond(HttpStatusCode.Unauthorized)
+                                    return@intercept
+                                }
                             }
                         }
                     }
@@ -125,14 +129,20 @@ fun Application.module() {
 
 // https://qiita.com/syumiwohossu/items/afae28300f3b70577e1b
 val privateKey = "IHAVETOHIDETHIS"
-fun authenticateToken(token: String) {
+fun authenticateToken(token: String): Error? {
     try {
         val algorithm: com.auth0.jwt.algorithms.Algorithm = Algorithm.HMAC256(privateKey)
         val verifier: JWTVerifier = JWT.require(algorithm).withIssuer("warikan_ktor").build()
         verifier.verify(token)
-    } catch (e: JWTCreationException) {
-        println("Invalid token")
+        return null
+    } catch (e: TokenExpiredException) {
+        return Error(e)
+    } catch (e: Exception) {
+        print(e)
+        return Error(e)
     }
+
+    return null
 }
 
 fun getUserIdFromToken(token: String?): Int {
