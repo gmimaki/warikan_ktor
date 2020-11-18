@@ -1,5 +1,6 @@
 package com.example.controller
 
+import com.example.MySession
 import com.example.msg.LoginReq
 import com.example.msg.LoginRes
 import com.example.service.UserAuthService
@@ -11,7 +12,11 @@ import io.ktor.response.respond
 import io.ktor.routing.Route
 import io.ktor.routing.post
 import io.ktor.routing.route
-import kotlinx.coroutines.async
+import io.ktor.sessions.sessions
+import io.ktor.sessions.set
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 fun Route.loginController() {
     val userService = UserService()
@@ -19,15 +24,24 @@ fun Route.loginController() {
     route("/user/login") {
         post {
             val param = call.receive<LoginReq>()
-            val user = userService.findByEmailAndPassword(param.email, param.password) ?: throw Error("メールアドレスかパスワードが正しくありません")
-            val token = async {
+            val user = userService.findByEmailAndPassword(param.email, param.password)
+            if (user == null) {
+                call.respond(HttpStatusCode.BadRequest, "メールアドレスかパスワードが正しくありません")
+                return@post
+            }
+            val token = withContext(Dispatchers.Default) {
                 UserAuthService().createToken(user)
-            }.await()
+            }
+
+            runBlocking {
+                call.sessions.set(MySession(token))
+            }
 
             call.respond(
                 HttpStatusCode.OK,
-                LoginRes(token)
+                LoginRes(Integer.parseInt(user.id.toString()), user.name) // user.id as IntがCastエラーになるので一度文字列にしてからintにする必要がある
             )
         }
     }
 }
+
