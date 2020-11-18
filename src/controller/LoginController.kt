@@ -24,7 +24,11 @@ fun Route.loginController() {
     route("/user/login") {
         post {
             val param = call.receive<LoginReq>()
-            val user = userService.findByEmailAndPassword(param.email, param.password) ?: throw Error("メールアドレスかパスワードが正しくありません") // 400か401にしたい
+            val user = userService.findByEmailAndPassword(param.email, param.password)
+            if (user == null) {
+                call.respond(HttpStatusCode.BadRequest, "メールアドレスかパスワードが正しくありません")
+                return@post
+            }
             val token = withContext(Dispatchers.Default) {
                 UserAuthService().createToken(user)
             }
