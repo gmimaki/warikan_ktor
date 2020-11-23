@@ -23,6 +23,7 @@ fun Route.acceptPartnerController() {
                 call.respond(
                     HttpStatusCode.BadRequest
                 )
+                return@post
             }
 
             call.respond(
