@@ -8,6 +8,8 @@ object Invite_tokens : IntIdTable() {
     val password = varchar("password", 12)
     val createdAt = long("created_at")
     val expiredAt = long("expired_at")
-    val approvedAt = long("approved_at").nullable()
+    var approvedAt = long("approved_at").nullable()
+    val approvedByInviterAt = long("approved_by_inviter_at").nullable()
     val approvedUserId = integer("approved_user_id").nullable()
 }
+// TODO ほんとは変遷を別テーブルで記録したほうがいい

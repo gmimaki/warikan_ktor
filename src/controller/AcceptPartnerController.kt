@@ -1,5 +1,6 @@
 package com.example.controller
 
+import com.example.msg.AcceptInviterReq
 import com.example.msg.GetInviterReq
 import com.example.msg.GetInviterResMsg
 import com.example.service.AcceptPartnerService
@@ -34,7 +35,8 @@ fun Route.acceptPartnerController() {
     }
     route("/accept") {
         post {
-
+            val param = call.receive<AcceptInviterReq>()
+            // tokenとパスワードのチェック
         }
     }
 }
