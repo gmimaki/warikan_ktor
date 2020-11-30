@@ -2,6 +2,10 @@ ktor {
     deployment {
         port = 8080
         port = ${?PORT}
+        AWS_ACCESS_KEY = ""
+        AWS_ACCESS_KEY = ${?AWS_ACCESS_KEY}
+        AWS_ACCESS_PASSWORD = ""
+        AWS_ACCESS_PASSWORD = ${?AWS_ACCESS_PASSWORD}
         watch = ["/app/my-application.jar"]
     }
     application {
