@@ -41,7 +41,7 @@ fun initDB() {
 }
 
 private fun Application.getEnv(name: String): String {
-    return environment.config.property(name).getString()
+    return System.getenv(name)
 }
 
 private fun ApplicationCall.redirectUrl(path: String): String {

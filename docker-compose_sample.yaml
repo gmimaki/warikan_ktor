@@ -12,6 +12,10 @@ services:
       - $PWD/build/libs/my-application.jar:/app/my-application.jar
     depends_on:
       - postgresql
+    environment:
+      AWS_REGION: "ap-northeast-1"
+      AWS_ACCESS_KEY_ID: ""
+      AWS_SECRET_ACCESS_KEY: ""
 
   postgresql:
     build:
