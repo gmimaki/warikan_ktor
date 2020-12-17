@@ -1,9 +1,9 @@
 package com.example.controller
 
-import com.amazonaws.auth.EnvironmentVariableCredentialsProvider
+import com.amazonaws.regions.Regions
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder
 import com.amazonaws.services.sqs.model.AmazonSQSException
-import com.amazonaws.services.sqs.model.CreateQueueRequest
+import com.amazonaws.services.sqs.model.SendMessageRequest
 import com.example.MyAttributeKey
 import com.example.msg.InvitePartnerRes
 import com.example.service.InvitePartnerService
@@ -22,12 +22,10 @@ fun Route.invitePartnerController() {
             val userId = call.attributes[MyAttributeKey]
             val inviteToken = invitePartnerService.getAvailableInviteToken(userId, now)
 
-            //val sqs = AmazonSQSClientBuilder.defaultClient().setRegion(Region("ap-northeast-1"))
-            //val sqs = AmazonSQSClientBuilder.standard().withRegion(Regions.AP_NORTHEAST_1).build()
-            val sqs = AmazonSQSClientBuilder.standard().withCredentials(EnvironmentVariableCredentialsProvider()).build()
-            val createRequest = CreateQueueRequest("AWS TEST")
+            val sqs = AmazonSQSClientBuilder.standard().withRegion(Regions.AP_NORTHEAST_1).build()
+
             try {
-                sqs.createQueue(createRequest)
+                sqs.sendMessage(SendMessageRequest("SQS URL", "ABCDEFG")) // TODO envから取る
             } catch (e: AmazonSQSException) {
                 if (e.errorCode != "QueueAlreadyExists") {
                     throw e;
