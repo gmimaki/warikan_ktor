@@ -41,7 +41,7 @@ fun initDB() {
 }
 
 private fun Application.getEnv(name: String): String {
-    return System.getenv(name)
+    return System.getenv(name) ?: ""
 }
 
 private fun ApplicationCall.redirectUrl(path: String): String {
@@ -105,7 +105,7 @@ fun Application.module() {
                                 token = token.replace("token=%23s", "") // なんか謎に入るんだよなー
                                 val err = authenticateToken(token)
                                 if (err != null) {
-                                    call.respond(HttpStatusCode.Unauthorized)
+                                    call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
                                     return@intercept
                                 }
                             }
@@ -115,6 +115,9 @@ fun Application.module() {
                     if (token?.length > 0) {
                         userId = getUserIdFromToken(token)
                         call.attributes.put(MyAttributeKey, userId)
+                    } else {
+                        call.respond(HttpStatusCode.Unauthorized, "Unauthorized")
+                        return@intercept
                     }
                 }
 

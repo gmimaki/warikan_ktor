@@ -37,6 +37,18 @@ fun Route.acceptPartnerController() {
         post {
             val param = call.receive<AcceptInviterReq>()
             // tokenとパスワードのチェック
+            /* SQSによる確認はinvitee -> inviterかな
+            val sqs = AmazonSQSClientBuilder.standard().withRegion(Regions.AP_NORTHEAST_1).build()
+
+            try {
+                sqs.sendMessage(SendMessageRequest("SQS URL", "ABCDEFG")) // TODO envから取る
+            } catch (e: AmazonSQSException) {
+                if (e.errorCode != "QueueAlreadyExists") {
+                    throw e;
+                }
+            }
+             */
+
         }
     }
 }
