@@ -40,12 +40,17 @@ fun Route.acceptPartnerController() {
 
             // tokenとパスワードのチェック
             val available = acceptPartnerService.checkInviteToken(param.inviterUserId, param.inviteToken, param.invitePassword, now)
-
+            // チェックに失敗したら400で返す
             if (!available.available) {
                 call.respond(HttpStatusCode.BadRequest, available.reason) // TODO reasonもjsonで返すべき
                 return@post
             }
-            
+
+            // TODO 招待者に通知したい
+
+            // 200を返す
+            call.respond(HttpStatusCode.OK)
+
             /* SQSによる確認はinvitee -> inviterかな
             val sqs = AmazonSQSClientBuilder.standard().withRegion(Regions.AP_NORTHEAST_1).build()
 
@@ -57,7 +62,6 @@ fun Route.acceptPartnerController() {
                 }
             }
              */
-
         }
     }
 }
