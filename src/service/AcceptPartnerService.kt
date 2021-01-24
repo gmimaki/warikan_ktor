@@ -23,6 +23,24 @@ class AcceptPartnerService {
         }
     }
 
+    data class checkInviteTokenResult(val available: Boolean, val reason: String)
+
+    // 招待を承諾する際、正しいリクエストであることを検証
+    fun checkInviteToken(inviterUserId: Int, token: String, password: String, checkedAt: Long): checkInviteTokenResult {
+        val target = transaction {
+            // TODO パスワード暗号化
+            InviteToken.find {
+                Invite_tokens.userId.eq(inviterUserId) and Invite_tokens.token.eq(token) and Invite_tokens.password.eq(password)
+            }.singleOrNull()
+        } ?: return checkInviteTokenResult(false, "不正なリクエストです")
+
+        if (target.expiredAt < checkedAt) {
+            return checkInviteTokenResult(false, "招待後24時間以上経過しており、無効となっています。招待者に再度招待をお願いしてください。")
+        }
+
+        return checkInviteTokenResult(true, "")
+    }
+
     fun acceptByInvitee(inviterId: Int, token: String, acceptedAt: Long): Error? {
 
         transaction {

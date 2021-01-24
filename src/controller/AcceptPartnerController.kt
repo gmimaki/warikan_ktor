@@ -35,8 +35,17 @@ fun Route.acceptPartnerController() {
     }
     route("/accept") {
         post {
+            val now = System.currentTimeMillis() / 1000
             val param = call.receive<AcceptInviterReq>()
+
             // tokenとパスワードのチェック
+            val available = acceptPartnerService.checkInviteToken(param.inviterUserId, param.inviteToken, param.invitePassword, now)
+
+            if (!available.available) {
+                call.respond(HttpStatusCode.BadRequest, available.reason) // TODO reasonもjsonで返すべき
+                return@post
+            }
+            
             /* SQSによる確認はinvitee -> inviterかな
             val sqs = AmazonSQSClientBuilder.standard().withRegion(Regions.AP_NORTHEAST_1).build()
 
