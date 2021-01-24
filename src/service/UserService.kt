@@ -29,6 +29,12 @@ class UserService {
         }
     }
 
+    fun createUser(): User {
+        return transaction {
+            User.new {}
+        }
+    }
+
     fun existsByEmail(email: String): Boolean {
         var count = 0;
         transaction {

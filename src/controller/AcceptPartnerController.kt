@@ -1,9 +1,11 @@
 package com.example.controller
 
 import com.example.msg.AcceptInviterReq
+import com.example.msg.AcceptInviterResMsg
 import com.example.msg.GetInviterReq
 import com.example.msg.GetInviterResMsg
 import com.example.service.AcceptPartnerService
+import com.example.service.UserService
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
@@ -14,6 +16,7 @@ import io.ktor.routing.route
 
 fun Route.acceptPartnerController() {
     val acceptPartnerService = AcceptPartnerService()
+    val userService = UserService()
     route("/inviter") {
         // inviteTokenからユーザー情報取得
         post {
@@ -46,10 +49,15 @@ fun Route.acceptPartnerController() {
                 return@post
             }
 
+            // User作成
+            val newUser = userService.createUser()
+
+            // Couple作成 CoupleとかUserのstatus必要? decouplingも考慮する必要あり
+
             // TODO 招待者に通知したい
 
             // 200を返す
-            call.respond(HttpStatusCode.OK)
+            call.respond(HttpStatusCode.OK, AcceptInviterResMsg(Integer.parseInt(newUser.id.toString())))
 
             /* SQSによる確認はinvitee -> inviterかな
             val sqs = AmazonSQSClientBuilder.standard().withRegion(Regions.AP_NORTHEAST_1).build()
